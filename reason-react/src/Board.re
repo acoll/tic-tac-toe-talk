@@ -10,7 +10,10 @@ let make = (~state: GameState.state, ~placeMarker, _children) => {
         array(
           Array.mapi(
             (index, marker: GameState.marker) =>
-              <div className="cell" onClick=(_evt => placeMarker(index))>
+              <div
+                key=(string_of_int(index))
+                className="cell"
+                onClick=(_evt => placeMarker(index))>
                 (string(GameState.stringOfMarker(marker)))
               </div>,
             state.cells,

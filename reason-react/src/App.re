@@ -7,8 +7,7 @@ let make = _children => {
   render: _self =>
     <GameState
       render=(
-        ({state, gameState, resetState, placeMarker}) => {
-          Js.log(state);
+        ({state, gameState, resetState, placeMarker}) =>
           <div className="App">
             <header className="App-header">
               <GameSummary gameState />
@@ -17,8 +16,7 @@ let make = _children => {
               </button>
             </header>
             <Board state placeMarker />
-          </div>;
-        }
+          </div>
       )
     />,
 };

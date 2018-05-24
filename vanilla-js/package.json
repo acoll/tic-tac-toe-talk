@@ -1,0 +1,11 @@
+{
+  "name": "vanilla-js",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "serve . --open"
+  },
+  "dependencies": {
+    "serve": "^6.5.8"
+  }
+}
