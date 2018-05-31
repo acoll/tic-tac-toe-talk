@@ -1,0 +1,15 @@
+#root {
+  padding: 3vh 2vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  header {
+    padding: 2vh 0;
+
+    &.active {
+      color: firebrick;
+    }
+  }
+}
