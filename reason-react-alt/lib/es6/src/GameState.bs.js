@@ -2,14 +2,37 @@
 
 import * as Block from "bs-platform/lib/es6/block.js";
 import * as Curry from "bs-platform/lib/es6/curry.js";
+import * as Caml_obj from "bs-platform/lib/es6/caml_obj.js";
 import * as Belt_List from "bs-platform/lib/es6/belt_List.js";
 import * as Belt_Array from "bs-platform/lib/es6/belt_Array.js";
+import * as Caml_array from "bs-platform/lib/es6/caml_array.js";
 import * as ReasonReact from "reason-react/lib/es6/src/ReasonReact.js";
 
 var component = ReasonReact.reducerComponent("GameState");
 
 function placeMarker(self, index) {
   return Curry._1(self[/* send */3], /* Claim */[index]);
+}
+
+function initialState() {
+  return /* record */[
+          /* player : X */0,
+          /* board : array */[
+            /* None */0,
+            /* None */0,
+            /* None */0,
+            /* None */0,
+            /* None */0,
+            /* None */0,
+            /* None */0,
+            /* None */0,
+            /* None */0
+          ]
+        ];
+}
+
+function reset(self, _) {
+  return Curry._1(self[/* send */3], /* Reset */0);
 }
 
 function playerToString(player) {
@@ -21,33 +44,77 @@ function playerToString(player) {
 }
 
 function checkForWinner(board) {
-  var winner = Belt_List.reduce(Belt_List.map(Belt_List.map(/* :: */[
+  var actual = Belt_List.map(/* :: */[
+        /* :: */[
+          0,
+          /* :: */[
+            1,
+            /* :: */[
+              2,
+              /* [] */0
+            ]
+          ]
+        ],
+        /* :: */[
+          /* :: */[
+            3,
+            /* :: */[
+              4,
+              /* :: */[
+                5,
+                /* [] */0
+              ]
+            ]
+          ],
+          /* :: */[
+            /* :: */[
+              6,
+              /* :: */[
+                7,
                 /* :: */[
-                  0,
+                  8,
+                  /* [] */0
+                ]
+              ]
+            ],
+            /* :: */[
+              /* :: */[
+                0,
+                /* :: */[
+                  3,
                   /* :: */[
-                    1,
+                    6,
+                    /* [] */0
+                  ]
+                ]
+              ],
+              /* :: */[
+                /* :: */[
+                  1,
+                  /* :: */[
+                    4,
                     /* :: */[
-                      2,
+                      7,
                       /* [] */0
                     ]
                   ]
                 ],
                 /* :: */[
                   /* :: */[
-                    3,
+                    2,
                     /* :: */[
-                      4,
+                      5,
                       /* :: */[
-                        5,
+                        8,
                         /* [] */0
                       ]
                     ]
                   ],
                   /* :: */[
                     /* :: */[
-                      6,
+                      0,
                       /* :: */[
-                        7,
+                        4,
                         /* :: */[
                           8,
                           /* [] */0
@@ -56,116 +123,73 @@ function checkForWinner(board) {
                     ],
                     /* :: */[
                       /* :: */[
-                        0,
+                        2,
                         /* :: */[
-                          3,
+                          4,
                           /* :: */[
                             6,
                             /* [] */0
                           ]
                         ]
                       ],
-                      /* :: */[
-                        /* :: */[
-                          1,
-                          /* :: */[
-                            4,
-                            /* :: */[
-                              7,
-                              /* [] */0
-                            ]
-                          ]
-                        ],
-                        /* :: */[
-                          /* :: */[
-                            2,
-                            /* :: */[
-                              5,
-                              /* :: */[
-                                8,
-                                /* [] */0
-                              ]
-                            ]
-                          ],
-                          /* :: */[
-                            /* :: */[
-                              0,
-                              /* :: */[
-                                4,
-                                /* :: */[
-                                  8,
-                                  /* [] */0
-                                ]
-                              ]
-                            ],
-                            /* :: */[
-                              /* :: */[
-                                2,
-                                /* :: */[
-                                  4,
-                                  /* :: */[
-                                    6,
-                                    /* [] */0
-                                  ]
-                                ]
-                              ],
-                              /* [] */0
-                            ]
-                          ]
-                        ]
-                      ]
+                      /* [] */0
                     ]
                   ]
                 ]
-              ], (function (combination) {
-                  return Belt_List.map(combination, (function (boardIndex) {
-                                return Belt_Array.getExn(board, boardIndex);
-                              }));
-                })), (function (cells) {
-              return Belt_List.reduce(cells, Belt_List.getExn(cells, 0), (function (a, b) {
-                            if (a) {
-                              if (a[0]) {
-                                if (b && b[0]) {
-                                  return /* Some */[/* O */1];
-                                } else {
-                                  return /* None */0;
-                                }
-                              } else if (b && !b[0]) {
-                                return /* Some */[/* X */0];
-                              } else {
-                                return /* None */0;
-                              }
-                            } else {
-                              return /* None */0;
-                            }
-                          }));
-            })), /* None */0, (function (a, b) {
-          var exit = 0;
-          if (a && !a[0]) {
-            return /* Some */[/* X */0];
-          } else {
-            exit = 1;
-          }
-          if (exit === 1) {
-            if (b) {
-              if (b[0]) {
-                return /* Some */[/* O */1];
-              } else {
-                return /* Some */[/* X */0];
-              }
-            } else if (a) {
-              return /* Some */[/* O */1];
-            } else {
-              return /* None */0;
-            }
-          }
-          
+              ]
+            ]
+          ]
+        ]
+      ], (function (combination) {
+          return Belt_List.map(combination, (function (index) {
+                        return Caml_array.caml_array_get(board, index);
+                      }));
         }));
-  if (winner) {
-    return /* Some */[winner[0] ? "O" : "X"];
+  var hasXWon = Belt_List.some(actual, (function (a) {
+          return Caml_obj.caml_equal(a, /* :: */[
+                      /* Some */[/* X */0],
+                      /* :: */[
+                        /* Some */[/* X */0],
+                        /* :: */[
+                          /* Some */[/* X */0],
+                          /* [] */0
+                        ]
+                      ]
+                    ]);
+        }));
+  var hasOWon = Belt_List.some(actual, (function (a) {
+          return Caml_obj.caml_equal(a, /* :: */[
+                      /* Some */[/* O */1],
+                      /* :: */[
+                        /* Some */[/* O */1],
+                        /* :: */[
+                          /* Some */[/* O */1],
+                          /* [] */0
+                        ]
+                      ]
+                    ]);
+        }));
+  if (hasXWon) {
+    if (hasOWon) {
+      return /* None */0;
+    } else {
+      return /* Some */["X"];
+    }
+  } else if (hasOWon) {
+    return /* Some */["O"];
   } else {
     return /* None */0;
   }
+}
+
+function isTie(board) {
+  return Belt_Array.reduce(board, true, (function (a, b) {
+                if (a && b) {
+                  return true;
+                } else {
+                  return false;
+                }
+              }));
 }
 
 function make(children) {
@@ -180,43 +204,34 @@ function make(children) {
           /* willUpdate */component[/* willUpdate */7],
           /* shouldUpdate */component[/* shouldUpdate */8],
           /* render */(function (self) {
-              return Curry._4(children, self[/* state */1][/* board */1], self[/* state */1][/* player */0] ? "O" : "X", checkForWinner(self[/* state */1][/* board */1]), (function (param) {
+              return Curry._6(children, self[/* state */1][/* board */1], self[/* state */1][/* player */0] ? "O" : "X", checkForWinner(self[/* state */1][/* board */1]), isTie(self[/* state */1][/* board */1]), (function (param) {
                             return Curry._1(self[/* send */3], /* Claim */[param]);
+                          }), (function () {
+                            return Curry._1(self[/* send */3], /* Reset */0);
                           }));
             }),
-          /* initialState */(function () {
-              return /* record */[
-                      /* player : X */0,
-                      /* board : array */[
-                        /* None */0,
-                        /* None */0,
-                        /* None */0,
-                        /* None */0,
-                        /* None */0,
-                        /* None */0,
-                        /* None */0,
-                        /* None */0,
-                        /* None */0
-                      ]
-                    ];
-            }),
+          /* initialState */initialState,
           /* retainedProps */component[/* retainedProps */11],
           /* reducer */(function (action, state) {
-              var index = action[0];
-              var match = checkForWinner(state[/* board */1]);
-              var match$1 = Belt_Array.getExn(state[/* board */1], index);
-              if (!match) {
-                if (match$1) {
-                  
-                } else {
-                  Belt_Array.setExn(state[/* board */1], index, /* Some */[state[/* player */0]]);
+              if (action) {
+                var index = action[0];
+                var match = checkForWinner(state[/* board */1]);
+                var match$1 = Belt_Array.getExn(state[/* board */1], index);
+                if (!match) {
+                  if (match$1) {
+                    
+                  } else {
+                    Belt_Array.setExn(state[/* board */1], index, /* Some */[state[/* player */0]]);
+                  }
                 }
+                var match$2 = state[/* player */0];
+                return /* Update */Block.__(0, [/* record */[
+                            /* player */match$2 ? /* X */0 : /* O */1,
+                            /* board */state[/* board */1]
+                          ]]);
+              } else {
+                return /* Update */Block.__(0, [initialState(/* () */0)]);
               }
-              var match$2 = state[/* player */0];
-              return /* Update */Block.__(0, [/* record */[
-                          /* player */match$2 ? /* X */0 : /* O */1,
-                          /* board */state[/* board */1]
-                        ]]);
             }),
           /* subscriptions */component[/* subscriptions */13],
           /* jsElementWrapped */component[/* jsElementWrapped */14]
@@ -226,8 +241,11 @@ function make(children) {
 export {
   component ,
   placeMarker ,
+  initialState ,
+  reset ,
   playerToString ,
   checkForWinner ,
+  isTie ,
   make ,
   
 }

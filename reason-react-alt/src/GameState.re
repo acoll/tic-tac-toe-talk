@@ -10,7 +10,8 @@ type state = {
 };
 
 type action =
-  | Claim(int);
+  | Claim(int)
+  | Reset;
 
 let component = ReasonReact.reducerComponent("GameState");
 
@@ -20,6 +21,18 @@ let placeMarker =
       index,
     ) =>
   self.send(Claim(index));
+
+let initialState = () => {
+  player: X,
+  board: [|None, None, None, None, None, None, None, None, None|],
+};
+
+let reset =
+    (
+      self: ReasonReact.self(state, ReasonReact.noRetainedProps, action),
+      _event,
+    ) =>
+  self.send(Reset);
 
 let playerToString = player =>
   switch (player) {
@@ -39,46 +52,34 @@ let checkForWinner = board => {
     [2, 4, 6],
   ];
 
-  let winner =
-    Belt.List.reduce(
-      Belt.List.map(
-        Belt.List.map(combinations, combination =>
-          Belt.List.map(combination, boardIndex =>
-            Belt.Array.getExn(board, boardIndex)
-          )
-        ),
-        cells =>
-        Belt.List.reduce(cells, Belt.List.getExn(cells, 0), (a, b) =>
-          switch (a, b) {
-          | (Some(X), Some(X)) => Some(X)
-          | (Some(O), Some(O)) => Some(O)
-          | _ => None
-          }
-        )
-      ),
-      None,
-      (a, b) =>
-      switch (a, b) {
-      | (Some(X), _) => Some(X)
-      | (_, Some(X)) => Some(X)
-      | (Some(O), _) => Some(O)
-      | (_, Some(O)) => Some(O)
-      | _ => None
-      }
+  let actual =
+    Belt.List.map(combinations, combination =>
+      Belt.List.map(combination, index => board[index])
     );
 
-  switch (winner) {
-  | None => None
-  | Some(player) => Some(playerToString(player))
+  let hasXWon =
+    Belt.List.some(actual, a => a == [Some(X), Some(X), Some(X)]);
+  let hasOWon =
+    Belt.List.some(actual, a => a == [Some(O), Some(O), Some(O)]);
+
+  switch (hasXWon, hasOWon) {
+  | (true, false) => Some(playerToString(X))
+  | (false, true) => Some(playerToString(O))
+  | _ => None
   };
 };
 
+let isTie = board =>
+  Belt.Array.reduce(board, true, (a, b) =>
+    switch (a, b) {
+    | (true, Some(_)) => true
+    | _ => false
+    }
+  );
+
 let make = children => {
   ...component,
-  initialState: () => {
-    player: X,
-    board: [|None, None, None, None, None, None, None, None, None|],
-  },
+  initialState,
   reducer: (action, state) =>
     switch (action) {
     | Claim(index) =>
@@ -98,12 +99,15 @@ let make = children => {
           | O => X
           },
       });
+    | Reset => ReasonReact.Update(initialState())
     },
   render: self =>
     children(
       ~board=self.state.board: board,
       ~player=playerToString(self.state.player),
       ~winner=checkForWinner(self.state.board),
+      ~isTie=isTie(self.state.board),
       ~placeMarker=placeMarker(self),
+      ~reset=reset(self),
     ),
 };

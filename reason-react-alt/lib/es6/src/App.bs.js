@@ -22,11 +22,18 @@ function make() {
           /* willUpdate */component[/* willUpdate */7],
           /* shouldUpdate */component[/* shouldUpdate */8],
           /* render */(function () {
-              return ReasonReact.element(/* None */0, /* None */0, GameState$ReactTemplate.make((function (board, player, winner, placeMarker) {
+              return ReasonReact.element(/* None */0, /* None */0, GameState$ReactTemplate.make((function (board, player, winner, isTie, placeMarker, reset) {
                                 return ReasonReact.element(/* None */0, /* None */0, Fragment$ReactTemplate.make(/* array */[
                                                 winner ? React.createElement("header", {
                                                         className: "active"
-                                                      }, winner[0] + " won!") : React.createElement("header", undefined, player + "'s Turn"),
+                                                      }, winner[0] + " won!") : (
+                                                    isTie ? React.createElement("header", {
+                                                            className: "active"
+                                                          }, "Tie Game") : React.createElement("header", undefined, player + "'s Turn")
+                                                  ),
+                                                React.createElement("button", {
+                                                      onClick: reset
+                                                    }, "reset"),
                                                 ReasonReact.element(/* None */0, /* None */0, Board$ReactTemplate.make(board, placeMarker, /* array */[]))
                                               ]));
                               })));
