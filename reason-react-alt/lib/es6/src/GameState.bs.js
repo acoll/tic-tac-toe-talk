@@ -43,7 +43,7 @@ function playerToString(player) {
   }
 }
 
-function checkForWinner(board) {
+function gameState(board) {
   var actual = Belt_List.map(/* :: */[
         /* :: */[
           0,
@@ -169,27 +169,33 @@ function checkForWinner(board) {
                       ]
                     ]);
         }));
+  var isTie = function (board) {
+    return Belt_Array.reduce(board, true, (function (a, b) {
+                  if (a && b) {
+                    return true;
+                  } else {
+                    return false;
+                  }
+                }));
+  };
+  var match = isTie(board);
   if (hasXWon) {
-    if (hasOWon) {
-      return /* None */0;
+    if (hasOWon || match) {
+      return /* Incomplete */0;
     } else {
-      return /* Some */["X"];
+      return /* Winner */[/* X */0];
     }
   } else if (hasOWon) {
-    return /* Some */["O"];
+    if (match) {
+      return /* Incomplete */0;
+    } else {
+      return /* Winner */[/* O */1];
+    }
+  } else if (match) {
+    return /* Tie */1;
   } else {
-    return /* None */0;
+    return /* Incomplete */0;
   }
-}
-
-function isTie(board) {
-  return Belt_Array.reduce(board, true, (function (a, b) {
-                if (a && b) {
-                  return true;
-                } else {
-                  return false;
-                }
-              }));
 }
 
 function make(children) {
@@ -204,9 +210,9 @@ function make(children) {
           /* willUpdate */component[/* willUpdate */7],
           /* shouldUpdate */component[/* shouldUpdate */8],
           /* render */(function (self) {
-              return Curry._6(children, self[/* state */1][/* board */1], self[/* state */1][/* player */0] ? "O" : "X", checkForWinner(self[/* state */1][/* board */1]), isTie(self[/* state */1][/* board */1]), (function (param) {
+              return Curry._6(children, self[/* state */1][/* board */1], self[/* state */1][/* player */0], gameState(self[/* state */1][/* board */1]), (function (param) {
                             return Curry._1(self[/* send */3], /* Claim */[param]);
-                          }), (function () {
+                          }), playerToString, (function () {
                             return Curry._1(self[/* send */3], /* Reset */0);
                           }));
             }),
@@ -215,10 +221,10 @@ function make(children) {
           /* reducer */(function (action, state) {
               if (action) {
                 var index = action[0];
-                var match = checkForWinner(state[/* board */1]);
+                var match = gameState(state[/* board */1]);
                 var match$1 = Belt_Array.getExn(state[/* board */1], index);
-                if (!match) {
-                  if (match$1) {
+                if (typeof match === "number") {
+                  if (match !== 0 || match$1) {
                     
                   } else {
                     Belt_Array.setExn(state[/* board */1], index, /* Some */[state[/* player */0]]);
@@ -244,8 +250,7 @@ export {
   initialState ,
   reset ,
   playerToString ,
-  checkForWinner ,
-  isTie ,
+  gameState ,
   make ,
   
 }

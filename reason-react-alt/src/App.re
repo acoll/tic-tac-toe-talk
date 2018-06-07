@@ -12,23 +12,23 @@ let make = _children => {
   render: _self =>
     <GameState>
       ...(
-           (~board, ~player, ~winner, ~isTie, ~placeMarker, ~reset) =>
+           (~board, ~player, ~gameState, ~placeMarker, ~playerToString, ~reset) =>
              <Fragment>
                (
-                 switch (winner) {
-                 | None =>
-                   if (isTie) {
-                     <header className="active">
-                       (ReasonReact.string("Tie Game"))
-                     </header>;
-                   } else {
-                     <header>
-                       (ReasonReact.string(player ++ "'s Turn"))
-                     </header>;
-                   }
-                 | Some(player) =>
+                 switch (gameState) {
+                 | Tie =>
                    <header className="active">
-                     (ReasonReact.string(player ++ " won!"))
+                     (ReasonReact.string("Tie Game"))
+                   </header>
+                 | Winner(player) =>
+                   <header className="active">
+                     (ReasonReact.string(playerToString(player) ++ " won!"))
+                   </header>
+                 | Incomplete =>
+                   <header>
+                     (
+                       ReasonReact.string(playerToString(player) ++ "'s Turn")
+                     )
                    </header>
                  }
                )
