@@ -23,5 +23,6 @@
   "refmt": 3,
   "warnings": {
     "error": "+5"
-  }
+  },
+  "bsc-flags": ["-bs-g"]
 }
